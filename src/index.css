@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+body{
+    background-color: #191D1F;
+}
+.poppins{
+  font-family: 'Poppins';
+}
+
+/* ===== Global Scrollbar ===== */
+
+/* WebKit browsers */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #6366f1,
+    #22c55e
+  );
+  border-radius: 999px;
+  border: 2px solid #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #818cf8,
+    #34d399
+  );
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #333333 #0a0a0a;
+}
