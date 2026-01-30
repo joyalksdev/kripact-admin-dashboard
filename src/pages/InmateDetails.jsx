@@ -7,7 +7,7 @@ const InmateDetails = ({ inmate }) => {
       {/* Header */}
       <div className="flex items-center gap-4">
         <img
-          src={inmate.photo || "https://i.pravatar.cc/100"}
+          src={inmate.photo || `https://api.dicebear.com/9.x/initials/svg?seed=${inmate.name}`}
           className="w-16 h-16 rounded-full"
         />
         <div>

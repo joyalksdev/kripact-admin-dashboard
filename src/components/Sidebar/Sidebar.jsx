@@ -11,7 +11,14 @@ import {
 import { NavLink } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { useState, useRef, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
+const NAV_BY_ROLE = {
+  intern: ["Dashboard", "Inmates", "Profile"],
+  staff: ["Dashboard", "Inmates", "Tasks", "Profile"],
+  management: ["Dashboard", "Inmates", "Staffs", "Tasks", "Profile"],
+  admin: ["Dashboard", "Inmates", "Staffs", "Tasks", "Profile"],
+};
 
 const navItems = [
   { name: "Dashboard", icon: HiOutlineSquares2X2, path: "/" },
@@ -25,10 +32,15 @@ const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [hovered, setHovered] = useState(false);
   const sidebarRef = useRef(null);
+  const { role } = useAuth();
 
+  const allowedNav = navItems.filter(item =>
+    NAV_BY_ROLE[role]?.includes(item.name)
+  );
+  
   useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (
+    const handleClickOutside = (e) => {
+      if (
       sidebarRef.current &&
       !sidebarRef.current.contains(e.target)
     ) {
@@ -105,7 +117,7 @@ const Sidebar = () => {
 
       {/* NAVIGATION */}
       <nav className="flex-1 px-4 space-y-5">
-        {navItems.map((item) => {
+        {allowedNav.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink

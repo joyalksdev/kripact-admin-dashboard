@@ -2,6 +2,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase/firebase";
 import { useNavigate } from "react-router-dom";
+import { toastError, toastSuccess } from "../utils/toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -9,17 +10,24 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+       toastSuccess("Login successful");
+
       navigate("/");
     } catch (err) {
       setError("Invalid email or password");
+      toastError("Invalid credentials");
+
     }
   };
+
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black">

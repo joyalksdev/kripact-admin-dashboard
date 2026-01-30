@@ -4,7 +4,7 @@ const InmateCard = ({ inmate, onView }) => {
   return (
     <div
       className="
-        relative rounded-2xl bg-neutral-900
+        relative rounded-2xl bg-neutral-900 overflow-hidden
         border border-neutral-800
         p-5 flex gap-4 items-start
         hover:border-indigo-500/50
@@ -22,7 +22,7 @@ const InmateCard = ({ inmate, onView }) => {
 
       {/* Avatar */}
       <img
-        src={inmate.photo || "https://i.pravatar.cc/100"}
+        src={inmate.photo || `https://api.dicebear.com/9.x/initials/svg?seed=${inmate.name}`}
         alt={inmate.name}
         className="w-14 h-14 rounded-full object-cover"
       />
