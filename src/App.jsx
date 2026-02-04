@@ -8,7 +8,7 @@ import Staffs from "./pages/Staffs";
 import Tasks from "./pages/Tasks";
 import Support from "./pages/Support";
 import Profile from "./pages/Profile";
-import InmatesDetails from "./pages/InmateDetails";
+import InmatesDetails from "./components/Inmates/QuickInmateDetails";
 import StaffsDetails from "./pages/StaffsDetails";
 import Login from "./pages/Login";
 

@@ -1,74 +1,99 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InmateCard from "../components/Inmates/InmateCard";
 import Modal from "../components/ui/Modal";
-import InmateDetails from "./InmateDetails";
+import InmateDetails from "../components/Inmates/QuickInmateDetails";
 import useInmates from "../hooks/useInmates";
 import { useAuth } from "../context/AuthContext";
-import { seedInmates } from "../scripts/seedInmates";
-import { toastWarn } from "../utils/toast"; 
+import { toastWarn } from "../utils/toast";
 import { can } from "../utils/permissions";
-import AdmitInmateForm from "../components/Inmates/AdmitInmateForm";
+import ResumeDraftsModal from "@/components/Inmates/ResumeDraftsModal";
+import AdmitInmateStepper from "@/components/Inmates/AdmitInmateStepper";
 
 const Inmates = () => {
   const { inmates, loading } = useInmates();
+  const { role, user } = useAuth();
+
   const [selected, setSelected] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  const { role } = useAuth();
-
-
+  const [showDrafts, setShowDrafts] = useState(false);
+  const [resumeDraftId, setResumeDraftId] = useState(null);
+  const [openAdmit, setOpenAdmit] = useState(false);
 
   const handleView = (inmate) => {
-  if (role === "intern") {
-    toastWarn("You don’t have permission to view inmate details");
-    return;
-  }
-  setSelected(inmate);
-};
+    if (role === "intern") {
+      toastWarn("No permission to view details");
+      return;
+    }
+    setSelected(inmate);
+  };
 
-console.log("ROLE:", role);
-
-  if (loading) {
-    return <div className="text-neutral-400">Loading inmates...</div>;
-  }
+  if (loading) return <div>Loading inmates...</div>;
 
   return (
     <>
+      {/* header */}
+      <div className="flex justify-between mb-5">
 
-    <div className="flex justify-between mb-5">
-       <div className='flex py-2 px-3 border border-neutral-700 rounded-lg'>
-        <input type="text" placeholder='Search Inmates' className='outline-none'/>
-       </div>
+        <input
+          placeholder="Search inmates"
+          className="px-3 py-2 bg-neutral-900 border border-neutral-800 rounded-lg"
+        />
 
-      {can(role, "admit") && (
-        <button
-          onClick={() => setOpen(true)}
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg"
-        >
-          + Admit Inmate
-        </button>
-      )}
-    </div>
+        <div className="flex gap-3">
+          {can(role,"admit") && (
+            <button
+              onClick={()=>setOpenAdmit(true)}
+              className="px-4 py-2 bg-indigo-600 rounded-lg text-white">
+              + Admit Inmate
+            </button>
+          )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {inmates.map(inmate => (
-          <InmateCard
-            key={inmate.id}
-            inmate={inmate}
-            onView={handleView}
-          />
+          <button
+            onClick={()=>setShowDrafts(true)}
+            className="text-indigo-400">
+            Resume Draft
+          </button>
+        </div>
+      </div>
+
+      {/* grid */}
+      <div className="grid grid-cols-3 gap-6">
+        {inmates.map(i=>(
+          <InmateCard key={i.id} inmate={i} onView={handleView}/>
         ))}
       </div>
 
-
-      <Modal open={!!selected} onClose={() => setSelected(null)}>
-        <InmateDetails inmate={selected} />
+      {/* details */}
+      <Modal open={!!selected} onClose={()=>setSelected(null)}>
+        <InmateDetails inmate={selected}/>
       </Modal>
 
-      <Modal open={open} onClose={() => setOpen(false)}>
-        <AdmitInmateForm onClose={() => setOpen(false)} />
+      {/* drafts */}
+      <Modal open={showDrafts} onClose={() => setShowDrafts(false)}>
+        <ResumeDraftsModal
+          user={user}
+          onClose={() => setShowDrafts(false)}
+          onSelect={(id) => {
+            setResumeDraftId(id);
+            setShowDrafts(false);
+            setOpenAdmit(true);
+          }}
+        />
       </Modal>
 
+      {/* admit */}
+      <Modal
+        open={openAdmit}
+        onClose={()=>setOpenAdmit(false)}
+        closeOnOutsideClick={false}
+      >
+        <AdmitInmateStepper
+          draftId={resumeDraftId}
+          onClose={()=>{
+            setOpenAdmit(false);
+            setResumeDraftId(null);
+          }}
+        />
+      </Modal>
     </>
   );
 };

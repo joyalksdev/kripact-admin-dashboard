@@ -1,22 +1,38 @@
 import { useEffect } from "react";
 
-const Modal = ({ open, onClose, children }) => {
+const Modal = ({
+  open,
+  onClose,
+  children,
+  closeOnOutsideClick = true,
+  closeOnEsc = true,
+}) => {
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "auto";
-  }, [open]);
+    if (!closeOnEsc) return;
+
+    const handler = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose, closeOnEsc]);
 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center">
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* overlay */}
       <div
-        onClick={onClose}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={() => closeOnOutsideClick && onClose?.()}
       />
 
-      {/* Modal Content */}
-      <div className="relative z-10 w-full max-w-2xl rounded-2xl bg-neutral-900 border border-neutral-800 p-6">
+      {/* modal */}
+      <div
+        className="relative w-full max-w-3xl mx-4 bg-neutral-950 border border-neutral-800 rounded-xl shadow-2xl p-6 animate-in fade-in zoom-in duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
         {children}
       </div>
     </div>

@@ -21,9 +21,19 @@ export const AuthProvider = ({ children }) => {
 
       setUser(currentUser);
 
-      const snap = await getDoc(doc(db, "users", currentUser.uid));
-      if (snap.exists()) {
-        setRole(snap.data().role);
+      try {
+        const userRef = doc(db, "users", currentUser.uid);
+        const snap = await getDoc(userRef);
+
+        if (snap.exists()) {
+          setRole(snap.data().role);
+        } else {
+          // user doc not created yet
+          setRole("intern");
+        }
+      } catch (err) {
+        console.error("Failed to fetch user role:", err);
+        setRole("intern");
       }
 
       setLoading(false);
@@ -38,5 +48,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-export const useAuth = () => useContext(AuthContext);
